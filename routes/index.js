@@ -1,11 +1,9 @@
 "use strict";
-const user = require("./user");
-const auth = require("./auth");
+const rating = require("./rating");
 
 module.exports = (app) => {
   try {
-    app.use("/user", user);
-    app.use("/auth", auth);
+    app.use("/rating", rating);
   } catch (err) {
     console.log("routes-err", err);
   }

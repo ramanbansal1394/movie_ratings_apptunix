@@ -1,7 +1,7 @@
 const config = {
   username: "ramanbansal1394",
   password: "Raman123",
-  database: "rudra_innovatives_db",
+  database: "movie_ratings_apptunix_db",
 };
 
 module.exports = config;
