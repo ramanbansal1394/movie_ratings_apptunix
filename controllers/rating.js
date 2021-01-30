@@ -112,7 +112,7 @@ module.exports.allRatings = async (req, res) => {
 };
 
 /**
- * @method countAverageCalculator: This method used to get all ratings
+ * @method countAverageCalculator: This method used to get count and average of ratings
  * @param {Object} req get request from the user
  * @param {Object} res send response to the user
  */
