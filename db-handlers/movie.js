@@ -1,7 +1,5 @@
 "use strict";
 const Movie = require("../models/movie");
-const mongoose = require("mongoose");
-const ObjectID = mongoose.Types.ObjectId;
 
 /**
  * @method find: A method use to get movie

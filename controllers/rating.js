@@ -69,29 +69,63 @@ module.exports.allRatings = async (req, res) => {
             return res.json({ status: 400, message: errors.array() });
         }
         Rating.aggregate([
+            { $sort: { rating: -1 } },
+            {
+                $lookup:
+                {
+                    from: 'users',
+                    localField: 'user_id',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
             {
                 $group: {
                     _id: '$movie_id',
-                    // itemsSold: { $addToSet: "$user_id" }
-                    ratings: { "$push": { user_id: "$user_id", rating: '$rating', comment: '$comment' } },
-                    // $unwind: '$ratings',
-                    // $sort: { 'ratings.rating': 1 }
+                    ratings: { $push: "$$ROOT" },
                 },
-                // $sort : { 'ratings.rating' : -1 }
             },
-            //  {
-            //     $set: {
-            //         user_id: "$user_id"
-            //     }
-            // },
-            // {
-            //     $project: {
-            //         user_id: 1,
-            //         rating: 1,
-            //         comment: 1,
-            //     },
-            // },
+            {
+                $lookup: {
+                    from: 'movies',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'movie'
+                }
+            },
+            { $limit: limit },
+            { $skip: offset }
+        ])
+            .then(result => {
+                return res.json({
+                    status: 200, message: "Fetch Ratings Successfully",
+                    data: { ratings: result }
+                });
+            }).catch(err => {
+                console.log("allRatings-err", err);
+                return res.json(responses.failedError);
+            })
+    } catch (err) {
+        console.log("allRatings-err", err);
+        return res.json(responses.failedError);
+    }
+};
 
+/**
+ * @method countAverageCalculator: This method used to get all ratings
+ * @param {Object} req get request from the user
+ * @param {Object} res send response to the user
+ */
+module.exports.countAverageCalculator = async (req, res) => {
+    try {
+        Rating.aggregate([
+            {
+                $group: {
+                    _id: '$movie_id',
+                    average: { $avg: "$rating" },
+                    count: { $sum: 1 }
+                },
+            },
             {
                 $lookup:
                 {
@@ -101,32 +135,18 @@ module.exports.allRatings = async (req, res) => {
                     as: 'movie'
                 }
             },
-            // {
-            //     $lookup:
-            //     {
-            //         from: 'users',
-            //         localField: 'ratings.user_id',
-            //         foreignField: '_id',
-            //         as: 'user'
-            //     }
-            // }
-            // { $unwind: "$ratings" },
-            // { $sort: { 'ratings.rating': -1 } },
-            // { $unwind: '$ratings' },
-            { $sort: { 'ratings.rating': 1 } },
-            { $limit: limit },
-            { $skip: offset }
         ]).then(result => {
             return res.json({
-                status: 200, message: "Fetch Ratings Successfully",
+                status: 200, message: "Fetch average and count of ratings Successfully",
                 data: { ratings: result }
             });
         }).catch(err => {
-            console.log("allRatings-err", err);
+            console.log("countAverageCalculator-err", err);
             return res.json(responses.failedError);
         })
     } catch (err) {
-        console.log("allRatings-err", err);
+        console.log("countAverageCalculator-err", err);
         return res.json(responses.failedError);
     }
 };
+

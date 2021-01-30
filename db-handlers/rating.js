@@ -1,7 +1,5 @@
 "use strict";
 const Rating = require("../models/rating");
-const mongoose = require("mongoose");
-const ObjectID = mongoose.Types.ObjectId;
 
 /**
  * @method create: A method to create rating of movie
